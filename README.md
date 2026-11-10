@@ -1,9 +1,17 @@
 <!-- markdownlint-disable MD041 -->
 # Sony BDP-CE Blu-ray Player for Home Assistant
 
+> **Fork by @dewohn (v0.2.0):** adds a `remote` entity that can send *every*
+> button of the player's remote over IP via `remote.send_command`
+> (chapter skip, Top/Pop-up menu, navigation, colour keys, ...), plus
+> next/previous chapter on the `media_player` entity. Harmony-style names
+> (`ChapterNext`, `PopUp`, `DirectionUp`, `Select`, ...) are accepted as
+> aliases. Original work by Kevin Clark (MIT).
+
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/hacs/integration)
-[![Open your Home Assistant instance and open this repository in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=kevinclark&repository=home-assistant-sony-bdp&category=integration)
+[![Open your Home Assistant instance and open this repository in HACS](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=dewohn&repository=home-assistant-sony-bdp&category=integration)
 
 IP control for Sony's **BDP-CE** family of Blu-ray players — developed and
 tested against a **UBP-X700** — as a proper Home Assistant integration:

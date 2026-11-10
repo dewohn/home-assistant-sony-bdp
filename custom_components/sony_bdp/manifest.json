@@ -5,11 +5,11 @@
     "@kevinclark"
   ],
   "config_flow": true,
-  "documentation": "https://github.com/kevinclark/home-assistant-sony-bdp",
+  "documentation": "https://github.com/dewohn/home-assistant-sony-bdp",
   "iot_class": "local_polling",
-  "issue_tracker": "https://github.com/kevinclark/home-assistant-sony-bdp/issues",
+  "issue_tracker": "https://github.com/dewohn/home-assistant-sony-bdp/issues",
   "requirements": [
     "sony-bdp-ip==0.1.0"
   ],
-  "version": "0.1.2"
+  "version": "0.2.0"
 }

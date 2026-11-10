@@ -107,6 +107,13 @@ class SonyBdpRemote(CoordinatorEntity[SonyBdpCoordinator], RemoteEntity):
             model=entry.data.get(CONF_MODEL) or "BDP-CE",
         )
         self._commands: dict[str, str] | None = None  # device name -> IRCC code
+        self._device_commands: dict[str, str] = {}
+        self._command_error: str | None = None
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        if self.is_on:
+            self.hass.async_create_task(self._async_load_commands())
 
     # --- state -----------------------------------------------------------
 
@@ -117,7 +124,15 @@ class SonyBdpRemote(CoordinatorEntity[SonyBdpCoordinator], RemoteEntity):
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
-        return {"commands": sorted(self._known_commands())}
+        attrs: dict[str, Any] = {
+            "commands": sorted(self._known_commands()),
+            "command_source": "device" if self._commands is not None else "builtin",
+        }
+        if self._device_commands:
+            attrs["device_commands"] = self._device_commands
+        if self._command_error:
+            attrs["command_list_error"] = self._command_error
+        return attrs
 
     # --- command table ---------------------------------------------------
 
@@ -132,12 +147,19 @@ class SonyBdpRemote(CoordinatorEntity[SonyBdpCoordinator], RemoteEntity):
             commands = await self.hass.async_add_executor_job(
                 self.coordinator.client.get_remote_commands
             )
-        except (PairingRequired, requests.exceptions.RequestException) as err:
-            _LOGGER.debug("Using built-in command table (%s)", err)
+        except Exception as err:  # noqa: BLE001 -- never break sending
+            msg = f"{type(err).__name__}: {err}"
+            if msg != self._command_error:
+                _LOGGER.warning(
+                    "%s: device command list unavailable, using built-in table (%s)",
+                    self.entity_id,
+                    msg,
+                )
+                self._command_error = msg
+                self.async_write_ha_state()
             return
-        except Exception:  # malformed XML etc. -- never break sending
-            _LOGGER.debug("Using built-in command table", exc_info=True)
-            return
+        self._command_error = None
+        self._device_commands = dict(commands or {})
         if commands:
             # Keep built-in names the device list lacks.
             self._commands = {**IRCC_CODES, **commands}
